@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backwards Calculator</title>
+  <style>
+    body {
+	background: linear-gradient(-45deg, #ff9e27, #a53ce7, #30e1bb, #4bf749);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+	height: 100vh;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    input[type="number"] {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #9e2fd5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @keyframes gradient {
+        0% {
+            background-position: 45% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Backwards Calculator</h1>
+    <p>Enter your desired solution, and we will generate a possible problem that equals your solution!</p>
+    <form onsubmit="generateProblem(event)">
+      <input type="number" id="solution" placeholder="Enter your answer" required>
+      <button type="submit">Generate Problem</button>
+    </form>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function generateProblem(event) {
+      event.preventDefault();
+
+      const solution = parseFloat(document.getElementById("solution").value);
+      if (isNaN(solution)) {
+        document.getElementById("result").innerText = "Please enter a valid number.";
+        return;
+      }
+
+      // Generate random numbers and operators
+      const operators = ["+", "-", "*", "/"];
+      const num1 = (Math.random() * 50).toFixed(2); // Random number between 0 and 50
+      const operator = operators[Math.floor(Math.random() * operators.length)];
+      
+      let num2;
+      let problem;
+
+      switch (operator) {
+        case "+":
+          num2 = (solution - num1).toFixed(2);
+          break;
+        case "-":
+          num2 = (num1 - solution).toFixed(2);
+          break;
+        case "*":
+          num2 = (solution / num1).toFixed(2);
+          break;
+        case "/":
+          num2 = (num1 / solution).toFixed(2);
+          break;
+      }
+
+      if (operator === "+" || operator === "-") {
+        problem = `${num1} ${operator} ${Math.abs(num2)} = ${solution}`;
+      } else {
+        problem = `${num1} ${operator} ${num2} = ${solution}`;
+      }
+
+      document.getElementById("result").innerText = problem;
+    }
+  </script>
+</body>
+</html>
