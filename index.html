@@ -3,114 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Backwards Calculator</title>
+  <title>Guaranteed Problem Generator</title>
   <style>
     body {
-	background: linear-gradient(-45deg, #ff9e27, #a53ce7, #30e1bb, #4bf749);
-	background-size: 400% 400%;
-	animation: gradient 15s ease infinite;
-	height: 100vh;
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(-45deg, #ff9e27, #a53ce7, #30e1bb, #4bf749);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
+    .calculator {
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      width: 340px;
       padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 30px;
+      box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2), -10px -10px 30px rgba(255, 255, 255, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    input[type="number"] {
-      padding: 10px;
-      width: 80%;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+
+    .display {
+      background: linear-gradient(145deg, #d1d1d1, #ffffff);
+      width: 100%;
+      height: 70px;
+      border-radius: 15px;
+      box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.2), inset -4px -4px 10px rgba(255, 255, 255, 0.5);
+      text-align: right;
+      padding: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      overflow: hidden;
     }
-    button {
-      padding: 10px 20px;
-      background-color: #9e2fd5;
-      color: white;
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .button {
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .result {
-      margin-top: 20px;
+      border-radius: 15px;
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2), -4px -4px 10px rgba(255, 255, 255, 0.5);
       font-size: 18px;
       font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60px;
+    }
+
+    .button:active {
+      box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.2), inset -4px -4px 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .special {
+      background-color: #ff9e27;
+      color: white;
     }
 
     @keyframes gradient {
-        0% {
-            background-position: 45% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
+      0% {
+        background-position: 45% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Backwards Calculator</h1>
-    <p>Enter your desired solution, and we will generate a possible problem that equals your solution!</p>
-    <form onsubmit="generateProblem(event)">
-      <input type="number" id="solution" placeholder="Enter your answer" required>
-      <button type="submit">Generate Problem</button>
-    </form>
-    <div class="result" id="result"></div>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="button" onclick="appendNumber(1)">1</button>
+      <button class="button" onclick="appendNumber(2)">2</button>
+      <button class="button" onclick="appendNumber(3)">3</button>
+      <button class="button" onclick="appendNumber(4)">4</button>
+      <button class="button" onclick="appendNumber(5)">5</button>
+      <button class="button" onclick="appendNumber(6)">6</button>
+      <button class="button" onclick="appendNumber(7)">7</button>
+      <button class="button" onclick="appendNumber(8)">8</button>
+      <button class="button" onclick="appendNumber(9)">9</button>
+      <button class="button" onclick="appendNumber(0)">0</button>
+      <button class="button special" onclick="generateProblem()">=</button>
+      <button class="button" onclick="clearDisplay()">Clear</button>
+    </div>
   </div>
 
   <script>
-    function generateProblem(event) {
-      event.preventDefault();
+    let currentInput = '';
 
-      const solution = parseFloat(document.getElementById("solution").value);
-      if (isNaN(solution)) {
-        document.getElementById("result").innerText = "Please enter a valid number.";
+    function appendNumber(number) {
+      currentInput += number;
+      updateDisplay(currentInput);
+    }
+
+    function generateProblem() {
+      const solution = parseInt(currentInput);
+      if (isNaN(solution) || solution <= 0) {
+        updateDisplay('Invalid');
         return;
       }
 
-      // Generate random numbers and operators
-      const operators = ["+", "-", "*", "/"];
-      const num1 = (Math.random() * 50).toFixed(2); // Random number between 0 and 50
-      const operator = operators[Math.floor(Math.random() * operators.length)];
-      
-      let num2;
       let problem;
 
-      switch (operator) {
-        case "+":
-          num2 = (solution - num1).toFixed(2);
-          break;
-        case "-":
-          num2 = (num1 - solution).toFixed(2);
-          break;
-        case "*":
-          num2 = (solution / num1).toFixed(2);
-          break;
-        case "/":
-          num2 = (num1 / solution).toFixed(2);
-          break;
-      }
+      // Generate a guaranteed problem using simple logic
+      const num1 = Math.floor(Math.random() * solution + 1); // Random number between 1 and solution
+      const num2 = solution - num1;
 
-      if (operator === "+" || operator === "-") {
-        problem = `${num1} ${operator} ${Math.abs(num2)} = ${solution}`;
+      if (Math.random() > 0.5) {
+        // Generate a more complex structure
+        const num3 = Math.floor(Math.random() * 10 + 1);
+        const intermediate = num1 + num2;
+        problem = `(${num1} + ${num2}) * ${num3} / ${num3} = ${solution}`;
       } else {
-        problem = `${num1} ${operator} ${num2} = ${solution}`;
+        // Simpler structure
+        problem = `${num1} + ${num2} = ${solution}`;
       }
 
-      document.getElementById("result").innerText = problem;
+      updateDisplay(problem);
+    }
+
+    function clearDisplay() {
+      currentInput = '';
+      updateDisplay('0');
+    }
+
+    function updateDisplay(value) {
+      document.getElementById('display').innerText = value;
     }
   </script>
 </body>
