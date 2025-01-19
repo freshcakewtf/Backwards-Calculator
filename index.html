@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Problem Generator</title>
+  <title>Guaranteed Problem Generator</title>
   <style>
     body {
       background-color: #487c6e;
-      font-family: "Microsoft Sans Serif", Arial, sans-serif; /* Windows 95 font */
+      font-family: "Microsoft Sans Serif", Arial, sans-serif;
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -20,17 +20,17 @@
       margin-bottom: 20px;
       text-align: center;
       color: black;
-      background-color: #e0e0e0; /* Light gray title bar background */
-      border: 2px solid #4a5555; /* Border matching Windows 95 theme */
+      background-color: #e0e0e0;
+      border: 2px solid #4a5555;
       padding: 10px 20px;
-      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040; /* 3D title effect */
+      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040;
       width: 380px;
     }
 
     .calculator {
-      background-color: #e0e0e0; /* Lighter gray for the calculator body */
-      border: 2px solid #4a5555; /* Windows 95 dark border */
-      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040; /* Inset shadows for 3D effect */
+      background-color: #e0e0e0;
+      border: 2px solid #4a5555;
+      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040;
       width: 340px;
       padding: 10px;
       display: flex;
@@ -39,10 +39,10 @@
     }
 
     .display {
-      background-color: #ffffff; /* White display box */
+      background-color: #ffffff;
       color: black;
       border: 2px solid #808080;
-      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040; /* 3D effect for the display */
+      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040;
       width: 100%;
       height: 70px;
       text-align: right;
@@ -60,9 +60,9 @@
     }
 
     .button {
-      background-color: #d9d9d9; /* Light gray for buttons */
+      background-color: #d9d9d9;
       border: 2px solid #808080;
-      box-shadow: -2px -2px 0 #ffffff, 2px 2px 0 #404040; /* 3D effect for buttons */
+      box-shadow: -2px -2px 0 #ffffff, 2px 2px 0 #404040;
       font-size: 16px;
       cursor: pointer;
       display: flex;
@@ -74,11 +74,51 @@
 
     .button:active {
       background-color: #c0c0c0;
-      box-shadow: inset -2px -2px 0 #404040, inset 2px 2px 0 #ffffff; /* Inset shadow for pressed buttons */
+      box-shadow: inset -2px -2px 0 #404040, inset 2px 2px 0 #ffffff;
     }
 
-    .special {
-      font-weight: bold;
+    .extra-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #e0e0e0;
+      border: 2px solid #4a5555;
+      box-shadow: inset -2px -2px 0 #ffffff, inset 2px 2px 0 #404040;
+      padding: 20px;
+      z-index: 1000;
+      cursor: move;
+    }
+
+    .modal h2 {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+
+    .modal p {
+      font-size: 14px;
+      margin: 0 0 10px;
+    }
+
+    .close-button {
+      background-color: #d9d9d9;
+      border: 2px solid #808080;
+      box-shadow: -2px -2px 0 #ffffff, 2px 2px 0 #404040;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    .close-button:active {
+      background-color: #c0c0c0;
+      box-shadow: inset -2px -2px 0 #404040, inset 2px 2px 0 #ffffff;
     }
   </style>
 </head>
@@ -104,8 +144,39 @@
     </div>
   </div>
 
+  <div class="extra-buttons">
+    <button class="button" onclick="showModal('info-modal')">Info</button>
+  </div>
+
+  <div class="modal" id="info-modal" onmousedown="startDrag(event, this)">
+    <h2>About This Calculator</h2>
+    <p>This calculator generates problems based on your desired solution. Have fun solving math backwards! Also, this pop-up is kind of busted</p>
+    <p style="font-size: 12px; color: gray;">Guaranteed Problem Generator
+      Copyright (c) 2025 Fresh Cake
+      Licensed under the MIT License. </p>
+    <button class="close-button" onclick="closeModal('info-modal')">Close</button>
+  </div>
+
   <script>
     let currentInput = '';
+    let isDragging = false;
+    let dragOffsetX, dragOffsetY;
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key;
+
+      if (!isNaN(key) && key !== ' ') {
+        appendNumber(key);
+      }
+
+      if (key === 'Enter') {
+        generateProblem();
+      }
+
+      if (key === 'Backspace') {
+        clearDisplay();
+      }
+    });
 
     function appendNumber(number) {
       currentInput += number;
@@ -118,23 +189,9 @@
         updateDisplay('Invalid');
         return;
       }
-
-      let problem;
-
-      // Generate a guaranteed problem using simple logic
-      const num1 = Math.floor(Math.random() * solution + 1); // Random number between 1 and solution
+      const num1 = Math.floor(Math.random() * solution + 1);
       const num2 = solution - num1;
-
-      if (Math.random() > 0.5) {
-        // Generate a more complex structure
-        const num3 = Math.floor(Math.random() * 10 + 1);
-        problem = `(${num1} + ${num2}) * ${num3} / ${num3} = ${solution}`;
-      } else {
-        // Simpler structure
-        problem = `${num1} + ${num2} = ${solution}`;
-      }
-
-      updateDisplay(problem);
+      updateDisplay(`${num1} + ${num2} = ${solution}`);
     }
 
     function clearDisplay() {
@@ -144,6 +201,38 @@
 
     function updateDisplay(value) {
       document.getElementById('display').innerText = value;
+    }
+
+    function showModal(id) {
+      const modal = document.getElementById(id);
+      modal.style.display = 'block';
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.style.display = 'none';
+    }
+
+    function startDrag(event, element) {
+      isDragging = true;
+      dragOffsetX = event.clientX - element.getBoundingClientRect().left;
+      dragOffsetY = event.clientY - element.getBoundingClientRect().top;
+
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', stopDrag);
+    }
+
+    function drag(event) {
+      if (!isDragging) return;
+      const modal = document.querySelector('.modal[style*="display: block"]');
+      modal.style.left = `${event.clientX - dragOffsetX}px`;
+      modal.style.top = `${event.clientY - dragOffsetY}px`;
+    }
+
+    function stopDrag() {
+      isDragging = false;
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('mouseup', stopDrag);
     }
   </script>
 </body>
