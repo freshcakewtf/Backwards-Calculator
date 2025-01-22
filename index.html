@@ -120,6 +120,13 @@
       background-color: #c0c0c0;
       box-shadow: inset -2px -2px 0 #404040, inset 2px 2px 0 #ffffff;
     }
+
+    .operation-selector {
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 5px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -127,6 +134,12 @@
     <h1>Guaranteed Problem Generator</h1>
   </div>
   <div class="calculator">
+    <select id="operation" class="operation-selector">
+      <option value="+">Addition</option>
+      <option value="-">Subtraction</option>
+      <option value="*">Multiplication</option>
+      <option value="/">Division</option>
+    </select>
     <div class="display" id="display">0</div>
     <div class="buttons">
       <button class="button" onclick="appendNumber(1)">1</button>
@@ -150,7 +163,7 @@
 
   <div class="modal" id="info-modal" onmousedown="startDrag(event, this)">
     <h2>About This Calculator</h2>
-    <p>This calculator generates problems based on your desired solution. Have fun solving math backwards! Also, this pop-up is kind of busted</p>
+    <p>This calculator generates problems based on your desired solution and selected operation. Have fun solving math backwards!</p>
     <p style="font-size: 12px; color: gray;">Guaranteed Problem Generator
       Copyright (c) 2025 Fresh Cake
       Licensed under the MIT License. </p>
@@ -189,9 +202,37 @@
         updateDisplay('Invalid');
         return;
       }
-      const num1 = Math.floor(Math.random() * solution + 1);
-      const num2 = solution - num1;
-      updateDisplay(`${num1} + ${num2} = ${solution}`);
+
+      const operation = document.getElementById('operation').value;
+      let num1, num2;
+
+      switch (operation) {
+        case '+':
+          num1 = Math.floor(Math.random() * solution + 1);
+          num2 = solution - num1;
+          break;
+        case '-':
+          num1 = Math.floor(Math.random() * (solution + 10) + solution);
+          num2 = num1 - solution;
+          break;
+        case '*':
+          num1 = Math.floor(Math.random() * (solution - 1) + 1);
+          num2 = Math.floor(solution / num1);
+          if (num1 * num2 !== solution) {
+            generateProblem();
+            return;
+          }
+          break;
+        case '/':
+          num2 = Math.floor(Math.random() * (solution - 1) + 1);
+          num1 = solution * num2;
+          break;
+        default:
+          updateDisplay('Error');
+          return;
+      }
+
+      updateDisplay(`${num1} ${operation} ${num2} = ${solution}`);
     }
 
     function clearDisplay() {
