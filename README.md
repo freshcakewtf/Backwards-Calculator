@@ -18,3 +18,6 @@ Because why not? Life's too short for serious calculators. Let's have some fun a
 This project is intended for fun and might not solve your actual math problems. But it will definitely give you a good chuckle!
 
 Enjoy the absurdity of mathematics with the Backwards Calculator!
+
+## Live Demo
+Check out the live demo [here](https://freshcakewtf.github.io/Backwards-Calculator/).
